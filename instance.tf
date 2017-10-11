@@ -26,5 +26,5 @@ resource "google_compute_instance_template" "instance_template" {
     instance_template  = "${google_compute_instance_template.instance_template.self_link}"
     base_instance_name = "instance-group-manager"
     zone               = "us-central1-f"
-    target_size        = "1"
+    target_size        = "3"
   }
