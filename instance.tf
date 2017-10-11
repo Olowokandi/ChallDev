@@ -18,7 +18,7 @@ resource "google_compute_instance_template" "instance_template" {
       }
   
   
-    metadata_startup_script = "sudo wget https://download.docker.com/linux/debian/dists/jessie/pool/stable/amd64/docker-ce_17.09.0~ce-0~debian_amd64.deb && sudo dpkg -i docker-ce_17.09.0~ce-0~debian_amd64.deb "
+    metadata_startup_script = "sudo wget https://download.docker.com/linux/debian/dists/jessie/pool/stable/amd64/docker-ce_17.09.0~ce-0~debian_amd64.deb && sudo dpkg -i docker-ce_17.09.0~ce-0~debian_amd64.deb && sudo apt-get -f install"
   }
 
   resource "google_compute_instance_group_manager" "instance_group_manager" {
