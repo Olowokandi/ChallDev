@@ -18,7 +18,24 @@ resource "google_compute_instance_template" "instance_template" {
       }
   
   
-    metadata_startup_script = "sudo wget https://download.docker.com/linux/debian/dists/jessie/pool/stable/amd64/docker-ce_17.09.0~ce-0~debian_amd64.deb && sudo dpkg -i docker-ce_17.09.0~ce-0~debian_amd64.deb && sudo apt-get -f install"
+    metadata_startup_script = "sudo wget https://download.docker.com/linux/debian/dists/jessie/pool/stable/amd64/docker-ce_17.09.0~ce-0~debian_amd64.deb && sudo dpkg -i docker-ce_17.09.0~ce-0~debian_amd64.deb && sudo apt-get install -f && sudo apt-get install git"
+  }
+
+  resource "google_compute_firewall" "elknet" {
+    name    = "elknet"
+    network = "default"
+  
+    allow {
+      protocol = "icmp"
+    }
+  
+    allow {
+      protocol = "tcp"
+      ports    = ["9200", "9300", "5000", "5601", "22"]
+    }
+  
+    source_ranges = ["0.0.0.0/0"]
+    target_tags = ["all"]
   }
 
   resource "google_compute_instance_group_manager" "instance_group_manager" {
@@ -28,3 +45,5 @@ resource "google_compute_instance_template" "instance_template" {
     zone               = "us-central1-f"
     target_size        = "3"
   }
+
+ 
