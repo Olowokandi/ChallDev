@@ -35,8 +35,9 @@ resource "google_compute_instance_template" "instance_template" {
     }
   
     source_ranges = ["0.0.0.0/0"]
+    target_tags = ["all"]
   }
-  
+
   resource "google_compute_instance_group_manager" "instance_group_manager" {
     name               = "instance-group-manager"
     instance_template  = "${google_compute_instance_template.instance_template.self_link}"
