@@ -1,6 +1,6 @@
 resource "google_compute_instance_template" "instance_template" {
     name_prefix  = "instance-template-"
-    machine_type = "g1-small"
+    machine_type = "n1-standard-1"
     region       = "us-central1"
   
 
