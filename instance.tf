@@ -18,7 +18,7 @@ resource "google_compute_instance_template" "instance_template" {
       }
   
   
-    metadata_startup_script = "sudo wget https://download.docker.com/linux/debian/dists/jessie/pool/stable/amd64/docker-ce_17.09.0~ce-0~debian_amd64.deb && sudo dpkg -i docker-ce_17.09.0~ce-0~debian_amd64.deb && sudo apt-get -y install -f && sudo apt-get -y install git"
+    metadata_startup_script = "curl -fsSL get.docker.com -o get-docker.sh && sudo sh get-docker.sh && sudo apt-get -y install git"
   }
 
   resource "google_compute_firewall" "elknet" {
