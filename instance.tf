@@ -1,3 +1,10 @@
+variable "gce_ssh_user" {
+  default = "gbolahan"
+}
+variable "gce_ssh_pub_key_file" {
+  default = "id_rsa.pub"
+}
+
 resource "google_compute_instance_template" "instance_template" {
     name_prefix  = "instance-template-"
     machine_type = "n1-standard-1"
@@ -16,7 +23,9 @@ resource "google_compute_instance_template" "instance_template" {
             // Ephemeral IP
           }
       }
-  
+    metadata {
+        sshKeys = "${var.gce_ssh_user}:${file(var.gce_ssh_pub_key_file)}"
+      }
   
     metadata_startup_script = "curl -fsSL get.docker.com -o get-docker.sh && sudo sh get-docker.sh && sudo apt-get -y install git"
   }
