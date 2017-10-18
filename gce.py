@@ -370,7 +370,7 @@ class GceInventory(object):
             #'gce_id': inst.id,
             #'gce_image': inst.image,
             #'gce_machine_type': inst.size,
-            #'gce_private_ip': inst.private_ips[0],
+            'gce_private_ip': inst.private_ips[0],
             #'gce_public_ip': inst.public_ips[0] if len(inst.public_ips) >= 1 else None,
             #'gce_name': inst.name,
             #'gce_description': inst.extra['description'],
@@ -381,7 +381,7 @@ class GceInventory(object):
             #'gce_network': net,
             #'gce_subnetwork': subnet,
             # Hosts don't have a public name, so we add an IP
-            'ansible_ssh_host': ssh_host
+            #'ansible_ssh_host': ssh_host
         }
 
     def load_inventory_from_cache(self):
