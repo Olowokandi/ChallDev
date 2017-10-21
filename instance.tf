@@ -1,33 +1,102 @@
-variable "gce_ssh_user" {
-  default = "gbolahan"
-}
-variable "gce_ssh_pub_key_file" {
-  default = "id_rsa.pub"
-}
-
-resource "google_compute_instance_template" "instance_template" {
-    name_prefix  = "instance-template-"
+  // web (nginx reverse proxies)
+  resource "google_compute_instance" "elk" {
+    name = "tf-elk"
     machine_type = "n1-standard-1"
-    region       = "us-central1"
+    zone = "${var.region_zone}"
+    tags = ["web"]
   
-
-    disk {
-        source_image = "debian-cloud/debian-8"
-        auto_delete  = true
-        boot         = true
+    boot_disk {
+        initialize_params {
+          image = "debian-cloud/debian-8"
+        }
+      }
+    
+      // Local SSD disk
+      scratch_disk {
       }
   
     network_interface {
-        network = "default"
-        access_config {
-            // Ephemeral IP
-          }
+      network = "default"
+      access_config {
+        // Ephemeral
       }
+    }
+  
     metadata {
-        sshKeys = "${var.gce_ssh_user}:${file(var.gce_ssh_pub_key_file)}"
+      ssh-keys = "gbolahan:${file("${var.public_key_path}")}"
+    }
+    metadata_startup_script = "curl -fsSL get.docker.com -o get-docker.sh && sudo sh get-docker.sh && sudo apt-get -y install git"
+  
+    service_account {
+      scopes = ["https://www.googleapis.com/auth/compute.readonly"]
+    }
+  }
+  
+  // app (Node.js)
+  resource "google_compute_instance" "app" {
+    name = "tf-app"
+    machine_type = "n1-standard-1"
+    zone = "${var.region_zone}"
+    tags = ["app"]
+  
+    boot_disk {
+        initialize_params {
+          image = "debian-cloud/debian-8"
+        }
+      }
+    
+      // Local SSD disk
+      scratch_disk {
       }
   
+    network_interface {
+      network = "default"
+      access_config {
+        // Ephemeral
+      }
+    }
+  
+    metadata {
+      ssh-keys = "gbolahan:${file("${var.public_key_path}")}"
+    }
     metadata_startup_script = "curl -fsSL get.docker.com -o get-docker.sh && sudo sh get-docker.sh && sudo apt-get -y install git"
+  
+    service_account {
+      scopes = ["https://www.googleapis.com/auth/compute.readonly"]
+    }
+  }
+  
+  resource "google_compute_instance" "nagios" {
+    name = "tf-nagios"
+    machine_type = "n1-standard-1"
+    zone = "${var.region_zone}"
+    tags = ["nagios"]
+  
+    boot_disk {
+        initialize_params {
+          image = "debian-cloud/debian-8"
+        }
+      }
+    
+      // Local SSD disk
+      scratch_disk {
+      }
+  
+    network_interface {
+      network = "default"
+      access_config {
+        // Ephemeral
+      }
+    }
+  
+    metadata {
+      ssh-keys = "gbolahan:${file("${var.public_key_path}")}"
+    }
+    metadata_startup_script = "curl -fsSL get.docker.com -o get-docker.sh && sudo sh get-docker.sh && sudo apt-get -y install git"
+  
+    service_account {
+      scopes = ["https://www.googleapis.com/auth/compute.readonly"]
+    }
   }
 
   resource "google_compute_firewall" "elknet" {
@@ -45,13 +114,3 @@ resource "google_compute_instance_template" "instance_template" {
   
     source_ranges = ["0.0.0.0/0"]
   }
-
-  resource "google_compute_instance_group_manager" "instance_group_manager" {
-    name               = "instance-group-manager"
-    instance_template  = "${google_compute_instance_template.instance_template.self_link}"
-    base_instance_name = "test"
-    zone               = "us-central1-f"
-    target_size        = "3"
-  }
-
- 
