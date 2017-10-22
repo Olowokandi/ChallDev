@@ -56,3 +56,21 @@
 
   - name: Container setup
     command: sudo docker-compose up -d
+
+  - name: Configure nagios instance
+    hosts: tag_nagios
+    connection: ssh
+    sudo: true
+
+    tasks:
+  - name: Container present
+    docker_container:
+      name: nagios
+      state: present
+      image: jasonrivers/nagios
+      published_ports:
+      - "8080:80"
+      - "25:25"
+      volumes:
+      - "/home/gbolahan/ChallDev/nagios/etc:/opt/nagios/etc/"
+      - "/home/gbolahan/ChallDev/nagios/var:/opt/nagios/var/"
