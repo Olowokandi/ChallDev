@@ -25,10 +25,9 @@
     command: sudo service docker restart 
 
   - name: Container setup
-    command: cd ChallDev && sudo docker-compose up -d
-
-  - name: install
-    command: sudo docker-compose up -d
+    command: sudo docker-compose up -d arg1
+    args:
+      chdir: /home/gbolahan/ChallDev
 
 - name: Configure app instance
   hosts: tag_app
