@@ -27,7 +27,7 @@
     command: sudo service docker restart 
 
   - name: Container setup
-    command: sudo docker-compose up -d arg1
+    command: sudo docker-compose up -d
     args:
       chdir: /home/gbolahan/ChallDev
 
