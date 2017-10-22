@@ -14,6 +14,8 @@
 
   - name: Clone repo
     command: sudo git clone https://github.com/Olowokandi/ChallDev.git
+    args: 
+      creates: /home/gbolahan/ChallDev
       
   - name: Sysctl vm max set
     command: sudo sysctl -w vm.max_map_count=262144
