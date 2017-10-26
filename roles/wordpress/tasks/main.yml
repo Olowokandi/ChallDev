@@ -1,0 +1,21 @@
+---
+- name: Adding docker user to group
+  command: sudo usermod -aG docker ${USER}
+
+- name: Restarting docker service
+  command: sudo service docker restart 
+
+- name: Install docker compose
+  command: sudo curl -L https://github.com/docker/compose/releases/download/1.16.1/docker-compose-Linux-x86_64 -o /usr/local/bin/docker-compose 
+    
+- name: Mke compose executable
+  command: sudo chmod +x /usr/local/bin/docker-compose
+
+- name: copy docker-compose file
+  template: src={{ item + ".j2" }}
+            dest={{supermicro_ipmicfg_path}}/{{ item }}
+  with_items:
+    - docker-compose.yml
+
+- name: Container setup
+  command: sudo docker-compose up -d

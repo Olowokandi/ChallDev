@@ -4,73 +4,21 @@
   hosts: tag_web
   connection: ssh
   sudo: true
-
-  tasks:
-  - name: Install docker compose
-    command: sudo curl -L https://github.com/docker/compose/releases/download/1.16.1/docker-compose-Linux-x86_64 -o /usr/local/bin/docker-compose 
-    
-  - name: Mke compose executable
-    command: sudo chmod +x /usr/local/bin/docker-compose
-
-  - name: Clone repo
-    command: sudo git clone https://github.com/Olowokandi/ChallDev.git
-    args: 
-      creates: /home/gbolahan/ChallDev
-      
-  - name: Sysctl vm max set
-    command: sudo sysctl -w vm.max_map_count=262144
-  
-  - name: Adding docker user to group
-    command: sudo usermod -aG docker ${USER}
-
-  - name: Restarting docker service
-    command: sudo service docker restart 
-
-  - name: Container setup
-    command: sudo docker-compose up -d
-    args:
-      chdir: /home/gbolahan/ChallDev
+  roles:
+     - elk
+     - nagios-client
 
 - name: Configure app instance
   hosts: tag_app
   connection: ssh
   sudo: true
+  roles:
+     - wordpress
+     - nagios-client
 
-  tasks:
-  - name: Adding docker user to group
-    command: sudo usermod -aG docker ${USER}
-
-  - name: Restarting docker service
-    command: sudo service docker restart 
-
-  - name: Install docker compose
-    command: sudo curl -L https://github.com/docker/compose/releases/download/1.16.1/docker-compose-Linux-x86_64 -o /usr/local/bin/docker-compose 
-    
-  - name: Mke compose executable
-    command: sudo chmod +x /usr/local/bin/docker-compose
-
-  - name: copy docker-compose file
-    copy: 
-      src: /home/gbolahan/ChallDev/wordpress/docker-compose.yml
-      dest: /home/gbolahan/docker-compose.yml
-
-  - name: Container setup
-    command: sudo docker-compose up -d
-
-  - name: Configure nagios instance
-    hosts: tag_nagios
-    connection: ssh
-    sudo: true
-
-    tasks:
-  - name: Container present
-    docker_container:
-      name: nagios
-      state: present
-      image: jasonrivers/nagios
-      published_ports:
-      - "8080:80"
-      - "25:25"
-      volumes:
-      - "/home/gbolahan/ChallDev/nagios/etc:/opt/nagios/etc/"
-      - "/home/gbolahan/ChallDev/nagios/var:/opt/nagios/var/"
+- name: Configure nagios instance
+  hosts: tag_nagios
+  connection: ssh
+  sudo: true
+  roles:
+  - { role: nagios }
