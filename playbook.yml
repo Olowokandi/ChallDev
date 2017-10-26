@@ -5,20 +5,20 @@
   connection: ssh
   sudo: true
   roles:
-     - elk
-     - nagios-client
+  - { role: elk }
+  - { role: 'sdarwin.nagios', run_nagios_client: true}
 
 - name: Configure app instance
   hosts: tag_app
   connection: ssh
   sudo: true
   roles:
-     - wordpress
-     - nagios-client
+  - { role: wordpress }
+  - { role: 'sdarwin.nagios', run_nagios_client: true}
 
 - name: Configure nagios instance
   hosts: tag_nagios
   connection: ssh
   sudo: true
   roles:
-  - { role: nagios }
+  - { role: 'sdarwin.nagios', run_nagios_server: true}
